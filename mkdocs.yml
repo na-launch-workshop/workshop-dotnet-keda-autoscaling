@@ -1,0 +1,11 @@
+site_name: Event-Driven Autoscaling with KEDA
+site_description: Scale a .NET Kafka consumer from zero to many replicas automatically using KEDA
+
+nav:
+  - Overview: index.md
+  - KEDA: keda.md
+  - .NET: dotnet.md
+  - Links: links.md
+
+plugins:
+  - techdocs-core

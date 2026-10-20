@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: workshop-dotnet-keda-autoscaling
+  labels:
+    app: workshop-dotnet-keda-autoscaling
+    backstage.io/kubernetes-id: workshop-dotnet-keda-autoscaling
+spec:
+  to:
+    kind: Service
+    name: workshop-dotnet-keda-autoscaling
+  port:
+    targetPort: 8080
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
