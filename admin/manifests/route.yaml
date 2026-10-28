@@ -1,14 +1,14 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: workshop-dotnet-keda-autoscaling
+  name: nba-scoreboard
   labels:
-    app: workshop-dotnet-keda-autoscaling
+    app: nba-scoreboard
     backstage.io/kubernetes-id: workshop-dotnet-keda-autoscaling
 spec:
   to:
     kind: Service
-    name: workshop-dotnet-keda-autoscaling
+    name: nba-scoreboard
   port:
     targetPort: 8080
   tls:

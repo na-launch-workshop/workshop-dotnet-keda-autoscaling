@@ -1,30 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: workshop-dotnet-keda-autoscaling
+  name: nba-scoreboard
   labels:
-    app: workshop-dotnet-keda-autoscaling
+    app: nba-scoreboard
     backstage.io/kubernetes-id: workshop-dotnet-keda-autoscaling
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
-      app: workshop-dotnet-keda-autoscaling
+      app: nba-scoreboard
   template:
     metadata:
       labels:
-        app: workshop-dotnet-keda-autoscaling
+        app: nba-scoreboard
         backstage.io/kubernetes-id: workshop-dotnet-keda-autoscaling
     spec:
       containers:
         - name: app
-          image: image-registry.openshift-image-registry.svc:5000/openshift/workshop-dotnet-keda-autoscaling:latest
+          image: image-registry.openshift-image-registry.svc:5000/openshift/nba-scoreboard-dotnet:latest
           imagePullPolicy: Always
-          env:
-            - name: Kafka__BootstrapServers
-              value: kafka-kafka-bootstrap:9092
-            - name: Kafka__ProcessingDelayMs
-              value: "2500"
+          ports:
+            - containerPort: 8080
           resources:
             requests:
               memory: 128Mi

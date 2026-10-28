@@ -2,9 +2,9 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: workshop-dotnet-keda-autoscaling
-  title: Event-Driven Autoscaling with KEDA - .NET
+  title: Event-Driven Autoscaling with KEDA HTTP Add-on - .NET
   description: |
-    Scale a .NET Kafka consumer from zero to many replicas automatically using KEDA
+    Scale a .NET web app from zero to many replicas on HTTP traffic using the KEDA HTTP Add-on
   annotations:
     backstage.io/kubernetes-id: workshop-dotnet-keda-autoscaling
     backstage.io/kubernetes-namespace: developers-devspaces
@@ -16,13 +16,10 @@ metadata:
   tags:
     - dotnet
     - keda
-    - kafka
+    - http
 # links:
 #   - url: https://<devspaces-url>/#<hosted-git-repo>
 #     title: 🚀 Launch from Dev Spaces
-#     icon: web
-#   - url: https://<kafka-ui-url>
-#     title: Kafka UI
 #     icon: web
 spec:
   type: module

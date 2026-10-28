@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NBA Finals — Game 5</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:     #0a0a0a;
+      --s1:     #111;
+      --s2:     #0d0d0d;
+      --border: #1e1e1e;
+      --knicks: #f58426;
+      --spurs:  #c0c0c0;
+      --live:   #00e676;
+      --error:  #ff3d3d;
+      --gold:   #ffd700;
+      --mono:   'Courier New', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+
+    /* ── LEFT: Scoreboard ─────────────────── */
+    .left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      border-right: 1px solid var(--border);
+      gap: 1.5rem;
+    }
+
+    .header { text-align: center; }
+    .series-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      font-family: var(--mono);
+    }
+    .game-label {
+      font-size: 0.85rem;
+      color: #555;
+      letter-spacing: 0.1em;
+      font-family: var(--mono);
+      margin-top: 0.25rem;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #444; }
+    .status-dot.live { background: var(--live); animation: pulse 1.5s infinite; }
+    .status-text.live { color: var(--live); }
+    @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,.5)} 50%{box-shadow:0 0 0 6px rgba(0,230,118,0)} }
+
+    .scoreboard {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      width: 100%;
+    }
+    .team {
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .team.knicks { background: linear-gradient(135deg, #0b1e47, #111); }
+    .team.spurs  { background: linear-gradient(135deg, #1a1a1a, #111); }
+    .team-logo { width: 72px; height: 72px; object-fit: contain; }
+    .team.spurs .team-logo { filter: brightness(0) invert(1) opacity(0.85); }
+    .team-abbr { font-size: 2.5rem; font-weight: 900; letter-spacing: 0.1em; font-family: var(--mono); }
+    .knicks .team-abbr { color: var(--knicks); text-shadow: 0 0 30px rgba(245,132,38,.4); }
+    .spurs  .team-abbr { color: var(--spurs);  text-shadow: 0 0 30px rgba(192,192,192,.3); }
+    .team-city { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: #555; font-family: var(--mono); }
+    .team-score { font-size: 5rem; font-weight: 900; font-family: var(--mono); line-height: 1; }
+    .knicks .team-score { color: #fff; }
+    .spurs  .team-score { color: #ccc; }
+    .team-score.bump { animation: sbump .4s ease-out; }
+    @keyframes sbump { 0%{transform:scale(1.15)} 100%{transform:scale(1)} }
+
+    .centre {
+      padding: 2rem 1.25rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      background: var(--s1);
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .quarter-label { font-family: var(--mono); font-size: 0.62rem; color: var(--error); letter-spacing: .15em; text-transform: uppercase; }
+    .quarter-label.live { color: var(--live); }
+    .clock { font-family: var(--mono); font-size: 1.8rem; font-weight: 700; color: #fff; }
+    .vs    { font-family: var(--mono); font-size: .7rem; color: #333; }
+    .period{ font-family: var(--mono); font-size: .65rem; color: #555; letter-spacing: .12em; }
+
+    .pod-label-footer { font-family: var(--mono); font-size: .6rem; color: #333; letter-spacing: .1em; text-align: center; }
+
+    /* Championship overlay */
+    .left { position: relative; }
+    .champ-overlay {
+      display: none; position: absolute; inset: 0;
+      background: linear-gradient(135deg, #003594 0%, #001f5b 40%, #0a0a0a 100%);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 1.25rem; z-index: 10; overflow: hidden;
+      animation: champ-in .6s ease-out;
+    }
+    .champ-overlay.show { display: flex; }
+    @keyframes champ-in { from{opacity:0;transform:scale(.96)} to{opacity:1;transform:scale(1)} }
+    .champ-trophy { font-size: 6.5rem; animation: tbounce 1.2s ease-in-out infinite alternate; }
+    @keyframes tbounce { from{transform:translateY(0) scale(1)} to{transform:translateY(-14px) scale(1.06)} }
+    .champ-title {
+      font-size: 1.8rem; font-weight: 900; text-transform: uppercase;
+      letter-spacing: .1em; text-align: center;
+      background: linear-gradient(135deg, #f58426, #ffd700);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .champ-sub { font-family: var(--mono); font-size: .72rem; color: rgba(255,255,255,.55); letter-spacing: .18em; text-transform: uppercase; text-align: center; }
+    .champ-badge {
+      background: var(--live); color: #000;
+      font-family: var(--mono); font-size: .65rem; font-weight: 800;
+      padding: .35rem 1.1rem; border-radius: 999px; letter-spacing: .1em; text-transform: uppercase;
+      animation: bpulse 1.6s ease-in-out infinite;
+    }
+    @keyframes bpulse { 0%,100%{box-shadow:0 0 16px rgba(0,230,118,.4)} 50%{box-shadow:0 0 36px rgba(0,230,118,.9)} }
+    .confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .cp { position: absolute; top: -14px; width: 8px; height: 13px; border-radius: 2px; animation: cfall linear infinite; }
+    @keyframes cfall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+    /* ── RIGHT: Dashboard ─────────────────── */
+    .right {
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      gap: 1rem;
+      overflow: hidden;
+    }
+
+    .dash-title {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .5rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .dash-logo { height: 22px; width: auto; filter: invert(1) hue-rotate(180deg); opacity: .9; }
+
+    /* Arc gauge row */
+    .gauge-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .gauge-card {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .875rem;
+      display: flex; flex-direction: column; align-items: center; gap: .25rem;
+    }
+    .glbl { font-family: var(--mono); font-size: .58rem; color: #555; text-transform: uppercase; letter-spacing: .12em; }
+    .gauge-svg { width: 110px; height: 68px; }
+    .gnum { font-family: var(--mono); font-size: 1.6rem; font-weight: 800; transition: color .4s, text-shadow .4s; }
+    .gnum.good { color: var(--live); text-shadow: 0 0 14px rgba(0,230,118,.5); }
+    .gnum.warn { color: var(--gold); text-shadow: 0 0 14px rgba(255,215,0,.4); }
+    .gnum.bad  { color: var(--error); text-shadow: 0 0 14px rgba(255,61,61,.5); }
+    .gsub { font-family: var(--mono); font-size: .58rem; color: #444; }
+
+    /* Counters */
+    .counter-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+    }
+    .counter {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .75rem;
+      text-align: center;
+    }
+    .counter .cl { font-family: var(--mono); font-size: .55rem; color: #555; text-transform: uppercase; letter-spacing: .1em; margin-bottom: .3rem; }
+    .counter .cv { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; transition: color .3s; }
+
+    /* Pod grid */
+    .pod-section {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .875rem;
+    }
+    .pod-sec-lbl { font-family: var(--mono); font-size: .58rem; color: #555; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .6rem; }
+    .pod-grid { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .pod-slot {
+      width: 80px; height: 52px;
+      border-radius: 7px; border: 1px solid #222;
+      background: #0d0d0d;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .2rem;
+      transition: all .4s; font-family: var(--mono);
+    }
+    .pod-slot.active {
+      border-color: rgba(0,230,118,.5); background: rgba(0,230,118,.06);
+      box-shadow: 0 0 12px rgba(0,230,118,.2);
+      animation: pod-in .4s ease-out;
+    }
+    @keyframes pod-in { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
+    .pod-slot .pi { font-size: 1rem; }
+    .pod-slot .pn { font-size: .5rem; color: #555; }
+    .pod-slot.active .pn { color: var(--live); }
+
+    /* Sparkline */
+    .spark-section {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .875rem;
+    }
+    .spark-lbl { font-family: var(--mono); font-size: .58rem; color: #555; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; }
+    .spark-svg { width: 100%; height: 52px; display: block; }
+
+    /* Log panel */
+    .log-section {
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .875rem;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .log-lbl { font-family: var(--mono); font-size: .58rem; color: #555; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; flex-shrink: 0; }
+    .log-list {
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column-reverse;
+    }
+    .log-entry {
+      font-family: var(--mono);
+      font-size: .65rem;
+      padding: .2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.03);
+      display: flex;
+      gap: .75rem;
+      align-items: center;
+    }
+    .log-time  { color: #444; flex-shrink: 0; }
+    .log-rate  { font-weight: 700; flex-shrink: 0; min-width: 40px; }
+    .log-total { color: #555; }
+    .log-entry.good .log-rate { color: var(--live); }
+    .log-entry.warn .log-rate { color: var(--gold); }
+    .log-entry.bad  .log-rate { color: var(--error); }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT: Scoreboard -->
+  <div class="left">
+    <div class="header">
+      <img src="/static/dominion-logo.png" alt="Dominion" style="height:38px;width:auto;object-fit:contain;margin-bottom:.5rem;" onerror="this.style.display='none'"/>
+      <div class="series-label">🏆 NBA Finals 2026 — Knicks Lead Series 3-1</div>
+      <div class="game-label">Game 5 · Madison Square Garden · New York</div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot" id="dot"></div>
+      <span class="status-text" id="status">Connecting…</span>
+    </div>
+
+    <div class="scoreboard">
+      <div class="team knicks">
+        <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612752/global/L/logo.svg" alt="NYK" onerror="this.style.display='none'"/>
+        <div class="team-abbr">NYK</div>
+        <div class="team-city">New York Knicks</div>
+        <div class="team-score" id="knicks-score">—</div>
+      </div>
+      <div class="centre">
+        <div class="quarter-label" id="period-label">LOADING</div>
+        <div class="clock" id="clock">—:——</div>
+        <div class="vs">vs</div>
+        <div class="period" id="quarter">Q—</div>
+      </div>
+      <div class="team spurs">
+        <img class="team-logo" src="https://cdn.nba.com/logos/nba/1610612759/global/L/logo.svg" alt="SAS" onerror="this.style.display='none'"/>
+        <div class="team-abbr">SAS</div>
+        <div class="team-city">San Antonio Spurs</div>
+        <div class="team-score" id="spurs-score">—</div>
+      </div>
+    </div>
+
+    <div class="pod-label-footer" id="pod-label"></div>
+
+    <!-- Championship overlay — shown when 4 pods are running -->
+    <div class="champ-overlay" id="champ-overlay">
+      <div class="confetti" id="confetti"></div>
+      <div class="champ-trophy">🏆</div>
+      <div class="champ-title">Knicks Win!<br>Championship Secured</div>
+      <div class="champ-sub">Game 5 · Madison Square Garden · Final</div>
+      <div class="champ-badge">⚡ KEDA Autoscaling Active — All 4 Pods Running</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Dashboard -->
+  <div class="right">
+    <div class="dash-title">⚡ Live System Metrics</div>
+
+    <!-- Gauges -->
+    <div class="gauge-row">
+      <div class="gauge-card">
+        <div class="glbl">Success Rate</div>
+        <svg class="gauge-svg" viewBox="0 0 110 68">
+          <path d="M10 64 A46 46 0 0 1 100 64" stroke="#1a1a1a" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <path id="gauge-arc" d="M10 64 A46 46 0 0 1 100 64" stroke="#00e676" stroke-width="9" fill="none"
+                stroke-linecap="round" stroke-dasharray="145" stroke-dashoffset="0"
+                style="transition:stroke-dashoffset .6s,stroke .6s;filter:drop-shadow(0 0 6px #00e676)"/>
+        </svg>
+        <div class="gnum good" id="m-rate">—</div>
+        <div class="gsub" id="m-fail-sub">0 failures</div>
+      </div>
+
+      <div class="gauge-card">
+        <div class="glbl">Request Volume</div>
+        <div style="display:flex;align-items:center;justify-content:center;flex:1">
+          <div style="text-align:center">
+            <div class="gnum" style="color:#888;font-size:2.2rem" id="m-total">0</div>
+            <div class="gsub">total polls</div>
+          </div>
+        </div>
+        <div class="gsub" id="m-ok-sub" style="color:var(--live)">0 successful</div>
+      </div>
+    </div>
+
+    <!-- Counters -->
+    <div class="counter-row">
+      <div class="counter">
+        <div class="cl">Total Requests</div>
+        <div class="cv" style="color:#888" id="m-total-big">0</div>
+      </div>
+      <div class="counter">
+        <div class="cl">Successful</div>
+        <div class="cv" style="color:var(--live)" id="m-ok-big">0</div>
+      </div>
+      <div class="counter">
+        <div class="cl">Failed</div>
+        <div class="cv" style="color:#333" id="m-fail">0</div>
+      </div>
+    </div>
+
+    <!-- Pod grid -->
+    <div class="pod-section">
+      <div class="pod-sec-lbl">KEDA — Active Pods</div>
+      <div class="pod-grid" id="pod-grid"></div>
+    </div>
+
+    <!-- Sparkline -->
+    <div class="spark-section" style="flex-shrink:0">
+      <div class="spark-lbl">Success rate — rolling 30s window</div>
+      <svg class="spark-svg" id="spark" viewBox="0 0 300 70" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+            <stop id="sg-top" offset="0%" stop-color="#00e676" stop-opacity=".25"/>
+            <stop offset="100%" stop-color="#00e676" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- grid -->
+        <line x1="0" y1="17" x2="300" y2="17" stroke="rgba(255,255,255,.04)" stroke-width=".5"/>
+        <line x1="0" y1="35" x2="300" y2="35" stroke="rgba(255,255,255,.06)" stroke-width=".5"/>
+        <line x1="0" y1="52" x2="300" y2="52" stroke="rgba(255,255,255,.04)" stroke-width=".5"/>
+        <path id="spark-fill" d="" fill="url(#sg)"/>
+        <path id="spark-line" d="" fill="none" stroke="#00e676" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"
+              style="filter:drop-shadow(0 0 3px #00e676)"/>
+        <circle id="spark-dot" cx="300" cy="10" r="3.5" fill="#00e676"
+                style="filter:drop-shadow(0 0 5px #00e676)"/>
+      </svg>
+    </div>
+
+    <!-- Log panel -->
+    <div class="log-section">
+      <div class="log-lbl">Activity Log</div>
+      <div class="log-list" id="log-list"></div>
+    </div>
+
+  </div>
+
+  <script>
+    let prevKnicks = null, prevSpurs = null;
+    const ARC = 145, HISTORY = 30;
+    const history = [];
+    let lastTotal = 0;
+
+    function renderMetrics(total, ok, fail, rate) {
+      const newReqs = total - lastTotal;
+      if (newReqs > 0) {
+        const slices = Math.min(newReqs, 10);
+        const okSlice = Math.round(slices * rate / 100);
+        for (let i = 0; i < okSlice; i++)          history.push(1);
+        for (let i = 0; i < slices - okSlice; i++) history.push(0);
+        while (history.length > HISTORY) history.shift();
+        lastTotal = total;
+      }
+
+      const cls = rate >= 90 ? 'good' : rate >= 60 ? 'warn' : 'bad';
+      const col = rate >= 90 ? '#00e676' : rate >= 60 ? '#ffd700' : '#ff3d3d';
+
+      const rateEl = document.getElementById('m-rate');
+      rateEl.textContent = rate + '%';
+      rateEl.className = 'gnum ' + cls;
+
+      const arc = document.getElementById('gauge-arc');
+      arc.style.strokeDashoffset = ARC * (1 - rate / 100);
+      arc.style.stroke = col;
+      arc.style.filter = `drop-shadow(0 0 6px ${col})`;
+
+      document.getElementById('m-total').textContent      = total.toLocaleString();
+      document.getElementById('m-total-big').textContent  = total.toLocaleString();
+      document.getElementById('m-ok-big').textContent     = ok.toLocaleString();
+      document.getElementById('m-ok-sub').textContent     = ok.toLocaleString() + ' successful';
+
+      const failEl = document.getElementById('m-fail');
+      failEl.textContent = fail.toLocaleString();
+      failEl.style.color = fail > 0 ? 'var(--error)' : '#333';
+      document.getElementById('m-fail-sub').textContent = fail.toLocaleString() + ' failure' + (fail !== 1 ? 's' : '');
+
+      // SVG area chart
+      const W = 300, H = 70, PAD = 8;
+      const pts = history.length < 2 ? [] : history.map((v, i) => {
+        const x = (i / (history.length - 1)) * W;
+        const y = PAD + (1 - v) * (H - PAD * 2);
+        return [x, y];
+      });
+      if (pts.length >= 2) {
+        // smooth bezier path
+        let d = `M${pts[0][0]},${pts[0][1]}`;
+        for (let i = 1; i < pts.length; i++) {
+          const [x0, y0] = pts[i - 1], [x1, y1] = pts[i];
+          const cx = (x0 + x1) / 2;
+          d += ` C${cx},${y0} ${cx},${y1} ${x1},${y1}`;
+        }
+        const last = pts[pts.length - 1];
+        const fillD = d + ` L${last[0]},${H} L0,${H} Z`;
+        const lineColor = col;
+        document.getElementById('spark-line').setAttribute('d', d);
+        document.getElementById('spark-line').style.stroke = lineColor;
+        document.getElementById('spark-line').style.filter = `drop-shadow(0 0 3px ${lineColor})`;
+        document.getElementById('spark-fill').setAttribute('d', fillD);
+        document.getElementById('sg-top').setAttribute('stop-color', lineColor);
+        document.getElementById('spark-dot').setAttribute('cx', last[0]);
+        document.getElementById('spark-dot').setAttribute('cy', last[1]);
+        document.getElementById('spark-dot').style.fill = lineColor;
+        document.getElementById('spark-dot').style.filter = `drop-shadow(0 0 5px ${lineColor})`;
+      }
+    }
+
+    let logEntries = [];
+    let lastLogRate = null;
+
+    function appendLog(rate, total, fail) {
+      if (total === 0) return;
+      // Only log when rate changes meaningfully or every 10s
+      const now = new Date();
+      const ts = now.toLocaleTimeString();
+      const cls = rate >= 90 ? 'good' : rate >= 60 ? 'warn' : 'bad';
+      const icon = rate >= 90 ? '✅' : rate >= 60 ? '⚠️' : '❌';
+      logEntries.unshift({ ts, rate, total, fail, cls, icon });
+      if (logEntries.length > 50) logEntries.pop();
+      document.getElementById('log-list').innerHTML = logEntries.map(e =>
+        `<div class="log-entry ${e.cls}">
+          <span class="log-time">${e.ts}</span>
+          <span class="log-rate">${e.icon} ${e.rate}%</span>
+          <span class="log-total">${e.total} reqs · ${e.fail} failed</span>
+        </div>`
+      ).join('');
+    }
+
+    async function fetchMetrics() {
+      try {
+        const res = await fetch('/api/metrics', { cache: 'no-store' });
+        if (!res.ok) return;
+        const d = await res.json();
+        renderMetrics(d.total, d.ok, d.fail, d.rate);
+        if (lastLogRate === null || Math.abs(d.rate - lastLogRate) >= 3 || d.total === 0) {
+          appendLog(d.rate, d.total, d.fail);
+          lastLogRate = d.rate;
+        }
+      } catch(_) {}
+    }
+
+    function renderPods(pods) {
+      const grid = document.getElementById('pod-grid');
+      let html = '';
+      for (let i = 0; i < 4; i++) {
+        const pod = pods[i];
+        const name = pod ? pod.split('-').slice(-2).join('-') : '';
+        html += `<div class="pod-slot ${pod ? 'active' : ''}">
+          <div class="pi">${pod ? '🟢' : '⬜'}</div>
+          <div class="pn">${name || 'idle'}</div>
+        </div>`;
+      }
+      grid.innerHTML = html;
+    }
+    renderPods([]);
+
+    function bump(id) {
+      const el = document.getElementById(id);
+      el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+    }
+
+    async function fetchScore() {
+      try {
+        const res = await fetch('/api/score', { cache: 'no-store' });
+        if (!res.ok) throw new Error(res.status);
+        const d = await res.json();
+
+        errorCount = 0;
+        document.getElementById('dot').className    = 'status-dot live';
+        document.getElementById('status').className = 'status-text live';
+        document.getElementById('status').textContent = 'LIVE';
+
+        if (prevKnicks !== null && d.knicks !== prevKnicks) bump('knicks-score');
+        if (prevSpurs  !== null && d.spurs  !== prevSpurs)  bump('spurs-score');
+
+        document.getElementById('knicks-score').textContent  = d.knicks;
+        document.getElementById('spurs-score').textContent   = d.spurs;
+        document.getElementById('clock').textContent          = d.clock;
+        document.getElementById('quarter').textContent        = d.quarter;
+        document.getElementById('period-label').textContent   = 'LIVE';
+        document.getElementById('period-label').className     = 'quarter-label live';
+        document.getElementById('pod-label').textContent      = `POD: ${d.pod}`;
+        prevKnicks = d.knicks; prevSpurs = d.spurs;
+      } catch (_) {
+        // score fetch failed — metrics come from server-side /api/metrics
+      }
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status', { cache: 'no-store' });
+        if (!res.ok) return;
+        const d = await res.json();
+        if (d.pods) {
+          renderPods(d.pods);
+          const podCount = d.ready >= 0 ? d.ready : 0;
+          document.querySelector('.pod-sec-lbl').textContent = `KEDA — Active Pods (${podCount} ready)`;
+          // Championship easter egg — all 4 pods running
+          const overlay = document.getElementById('champ-overlay');
+          if (podCount >= 4) {
+            if (!overlay.classList.contains('show')) {
+              overlay.classList.add('show');
+              spawnConfetti();
+            }
+          } else {
+            overlay.classList.remove('show');
+          }
+        }
+      } catch(_) {}
+    }
+
+    function spawnConfetti() {
+      const colors = ['#f58426','#ffd700','#003594','#00e676','#ffffff','#ee0000'];
+      const container = document.getElementById('confetti');
+      container.innerHTML = '';
+      for (let i = 0; i < 60; i++) {
+        const el = document.createElement('div');
+        el.className = 'cp';
+        el.style.left = Math.random() * 100 + '%';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+        el.style.animationDelay = (Math.random() * 3) + 's';
+        el.style.transform = `rotate(${Math.random() * 360}deg)`;
+        container.appendChild(el);
+      }
+    }
+
+    fetchScore(); fetchStatus(); fetchMetrics();
+    setInterval(fetchScore, 3000);
+    setInterval(fetchStatus, 3000);
+    setInterval(fetchMetrics, 1000);
+  </script>
+</body>
+</html>

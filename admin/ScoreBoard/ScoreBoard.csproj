@@ -4,11 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>KedaWorkshop</RootNamespace>
+    <RootNamespace>ScoreBoard</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="2.6.1" />
+    <PackageReference Include="KubernetesClient" Version="21.0.8" />
   </ItemGroup>
 
 </Project>

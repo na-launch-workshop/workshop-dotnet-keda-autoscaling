@@ -1,25 +1,54 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KedaWorkshop", "src\KedaWorkshop\KedaWorkshop.csproj", "{A1B2C3D4-0001-4000-8000-000000000001}"
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "admin", "admin", "{08363F22-23A7-70B7-557A-C076A2D48378}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventProducer", "src\EventProducer\EventProducer.csproj", "{A1B2C3D4-0002-4000-8000-000000000002}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScoreBoard", "admin\ScoreBoard\ScoreBoard.csproj", "{55B589CF-E349-411E-9051-B574859B6364}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Surge", "admin\Surge\Surge.csproj", "{716EDB25-CF13-49D4-9040-8F2DBEC5A698}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A1B2C3D4-0001-4000-8000-000000000001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1B2C3D4-0001-4000-8000-000000000001}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1B2C3D4-0001-4000-8000-000000000001}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1B2C3D4-0001-4000-8000-000000000001}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1B2C3D4-0002-4000-8000-000000000002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1B2C3D4-0002-4000-8000-000000000002}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1B2C3D4-0002-4000-8000-000000000002}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1B2C3D4-0002-4000-8000-000000000002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Debug|x64.Build.0 = Debug|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Debug|x86.Build.0 = Debug|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Release|x64.ActiveCfg = Release|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Release|x64.Build.0 = Release|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Release|x86.ActiveCfg = Release|Any CPU
+		{55B589CF-E349-411E-9051-B574859B6364}.Release|x86.Build.0 = Release|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Debug|x64.Build.0 = Debug|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Debug|x86.Build.0 = Debug|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Release|Any CPU.Build.0 = Release|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Release|x64.ActiveCfg = Release|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Release|x64.Build.0 = Release|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Release|x86.ActiveCfg = Release|Any CPU
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{55B589CF-E349-411E-9051-B574859B6364} = {08363F22-23A7-70B7-557A-C076A2D48378}
+		{716EDB25-CF13-49D4-9040-8F2DBEC5A698} = {08363F22-23A7-70B7-557A-C076A2D48378}
 	EndGlobalSection
 EndGlobal
