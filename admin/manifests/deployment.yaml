@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: image-registry.openshift-image-registry.svc:5000/openshift/nba-scoreboard-dotnet:latest
+          image: image-registry.openshift-image-registry.svc:5000/workspace-images/nba-scoreboard-dotnet:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

@@ -1,4 +1,4 @@
-site_name: Event-Driven Autoscaling with KEDA HTTP Add-on - .NET
+site_name: Event-Driven Autoscaling with KEDA - .NET
 site_description: Scale a .NET web app from zero to many replicas on HTTP traffic using the KEDA HTTP Add-on
 
 nav:

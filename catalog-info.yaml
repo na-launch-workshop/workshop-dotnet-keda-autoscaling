@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: workshop-dotnet-keda-autoscaling
-  title: Event-Driven Autoscaling with KEDA HTTP Add-on - .NET
+  title: Event-Driven Autoscaling with KEDA - .NET
   description: |
     Scale a .NET web app from zero to many replicas on HTTP traffic using the KEDA HTTP Add-on
   annotations:

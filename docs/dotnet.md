@@ -14,7 +14,7 @@ This project uses ASP.NET Core (.NET 8) minimal APIs for the web layer and the
 | `admin/ScoreBoard/wwwroot/index.html` | Scoreboard dashboard — polls the APIs below |
 | `admin/Surge/Program.cs` | Console app that floods `/api/score` with concurrent requests |
 | `admin/manifests/` | Deployment, Service, Route and interceptor Service deployed into each namespace |
-| `admin/*.sh` | Instructor-only: image build, deploy to every namespace, halftime surge |
+| `admin/*.sh` | Instructor-only: deploy to every namespace, halftime surge |
 | `manifests/` | Where you create `httpscaledobject.yaml` |
 
 ## API
